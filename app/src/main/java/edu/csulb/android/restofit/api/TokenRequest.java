@@ -1,8 +1,5 @@
 package edu.csulb.android.retrofit1;
 
-/**
- * Created by Administrator on 31-03-2017.
- */
 public class TokenRequest {
 
     public String getGrant_type() {

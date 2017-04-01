@@ -1,8 +1,8 @@
-package edu.csulb.android.retrofit1;
+package edu.csulb.android.restofit.api;
 
 
-    import com.google.gson.annotations.Expose;
-    import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class TokenResponse {
 

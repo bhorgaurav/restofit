@@ -17,6 +17,7 @@ import android.view.View;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.PagerAdapter;
 import edu.csulb.android.restofit.obseravables.FilterManager;
+import edu.csulb.android.restofit.utils.PreferenceHelper;
 
 public class MainActivity extends SuperActivity {
 
@@ -31,6 +32,9 @@ public class MainActivity extends SuperActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        PreferenceHelper.init(getApplicationContext());
+        setupYelp();
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Near You"));
@@ -60,6 +64,10 @@ public class MainActivity extends SuperActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+    }
+
+    private void setupYelp() {
+        // Ensure that, you have the token. If not, request and save a new token.
     }
 
     @Override
