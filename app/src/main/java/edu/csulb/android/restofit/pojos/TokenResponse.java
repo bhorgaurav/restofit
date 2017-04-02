@@ -1,4 +1,4 @@
-package edu.csulb.android.restofit.api;
+package edu.csulb.android.restofit.pojos;
 
 
 import com.google.gson.annotations.Expose;

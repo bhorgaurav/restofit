@@ -2,6 +2,8 @@ package edu.csulb.android.restofit.api;
 
 import java.io.IOException;
 
+import edu.csulb.android.restofit.utils.PreferenceHelper;
+import edu.csulb.android.restofit.utils.PreferenceKeys;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -14,36 +16,37 @@ public class APIClient {
 
     private static Retrofit retrofit = null;
 
-    public static Retrofit getClient(String API_URL, boolean isZomato) {
+    public static Retrofit getClient(String API_URL, final boolean isZomato) {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient.Builder client = new OkHttpClient.Builder().addInterceptor(interceptor);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder().addInterceptor(interceptor);
 
-        if (isZomato) {
-            client.addInterceptor(new Interceptor() {
-                /*
-                * Credits: https://futurestud.io/tutorials/retrofit-add-custom-request-header
-                * */
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request original = chain.request();
-                    Request request = original.newBuilder().addHeader("user-key", "42e3e7dfb9ef7fd7e388f824395a3b90")
-                            .addHeader("Accept", "application/json")
-                            .method(original.method(), original.body())
-                            .build();
+        builder.addInterceptor(new Interceptor() {
+            /*
+            * Credits: https://futurestud.io/tutorials/retrofit-add-custom-request-header
+            **/
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+                Request.Builder requestBuilder = original.newBuilder();
 
-                    return chain.proceed(request);
+                if (isZomato) {
+                    requestBuilder.addHeader("user-key", ZomatoAPI.USER_KEY)
+                            .addHeader("Accept", "application/json");
+                } else {
+                    requestBuilder.addHeader("Authorization", "Bearer " + PreferenceHelper.getString(PreferenceKeys.YELP_TOKEN));
                 }
-            });
-        } else {
-            // Add user token
-        }
+
+                requestBuilder.method(original.method(), original.body());
+                return chain.proceed(requestBuilder.build());
+            }
+        });
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(client.build())
+                .client(builder.build())
                 .build();
 
         return retrofit;

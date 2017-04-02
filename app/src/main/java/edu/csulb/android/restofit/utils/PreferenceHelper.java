@@ -47,4 +47,8 @@ public class PreferenceHelper {
     public static boolean getBoolean(String key) {
         return preferences.getBoolean(key, false);
     }
+
+    public static void remove(String key) {
+        preferences.edit().remove(key).apply();
+    }
 }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -16,8 +15,15 @@ import android.view.View;
 
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.PagerAdapter;
+import edu.csulb.android.restofit.api.APIClient;
+import edu.csulb.android.restofit.pojos.TokenResponse;
+import edu.csulb.android.restofit.api.YelpAPI;
 import edu.csulb.android.restofit.obseravables.FilterManager;
 import edu.csulb.android.restofit.utils.PreferenceHelper;
+import edu.csulb.android.restofit.utils.PreferenceKeys;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends SuperActivity {
 
@@ -68,6 +74,29 @@ public class MainActivity extends SuperActivity {
 
     private void setupYelp() {
         // Ensure that, you have the token. If not, request and save a new token.
+        if (!PreferenceHelper.contains(PreferenceKeys.YELP_TOKEN)) {
+            APIClient.getClient(YelpAPI.URL, false).create(YelpAPI.class).getTokenAccess(YelpAPI.CLIENT_ID, YelpAPI.CLIENT_SECRET, YelpAPI.GRANT_TYPE)
+                    .enqueue(new Callback<TokenResponse>() {
+
+                        @Override
+                        public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
+                            try {
+                                if (response.isSuccessful()) {
+                                    PreferenceHelper.save(PreferenceKeys.YELP_TOKEN, response.body().getAccessToken());
+                                } else {
+                                    System.out.println(response.errorBody().string());
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<TokenResponse> call, Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+        }
     }
 
     @Override

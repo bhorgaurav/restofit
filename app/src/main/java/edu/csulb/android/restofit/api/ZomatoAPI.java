@@ -8,6 +8,7 @@ import retrofit2.http.Headers;
 public interface ZomatoAPI {
 
     String URL = "https://developers.zomato.com/";
+    String USER_KEY = "42e3e7dfb9ef7fd7e388f824395a3b90";
 
     @GET("api/v2.1/categories")
     Call<ResponseBody> getCategories();
