@@ -1,5 +1,6 @@
 package edu.csulb.android.restofit.activities;
 
+import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.support.design.widget.TabLayout;
@@ -12,6 +13,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import java.util.List;
 
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.PagerAdapter;
@@ -25,6 +37,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/*
+* Uses https://github.com/Karumi/Dexter for checking and requesting permissions
+**/
 public class MainActivity extends SuperActivity {
 
     private TabLayout tabLayout;
@@ -40,7 +55,9 @@ public class MainActivity extends SuperActivity {
         setSupportActionBar(toolbar);
 
         PreferenceHelper.init(getApplicationContext());
-        setupYelp();
+        initYelp();
+
+        askPermissions();
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Near You"));
@@ -72,7 +89,28 @@ public class MainActivity extends SuperActivity {
         });
     }
 
-    private void setupYelp() {
+    private void askPermissions() {
+
+        Dexter.withActivity(this)
+                .withPermissions(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ).withListener(new MultiplePermissionsListener() {
+            @Override
+            public void onPermissionsChecked(MultiplePermissionsReport report) {
+                if (!report.areAllPermissionsGranted()) {
+                    Toast.makeText(getApplicationContext(), "The app needs access to your location to work. Please update from settings.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                token.continuePermissionRequest();
+            }
+        }).check();
+    }
+
+    private void initYelp() {
         // Ensure that, you have the token. If not, request and save a new token.
         if (!PreferenceHelper.contains(PreferenceKeys.YELP_TOKEN)) {
             APIClient.getClient(YelpAPI.URL, false).create(YelpAPI.class).getTokenAccess(YelpAPI.CLIENT_ID, YelpAPI.CLIENT_SECRET, YelpAPI.GRANT_TYPE)
