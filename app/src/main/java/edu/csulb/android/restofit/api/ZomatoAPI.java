@@ -4,6 +4,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Query;
 
 public interface ZomatoAPI {
 
@@ -16,8 +17,11 @@ public interface ZomatoAPI {
     @GET("api/v2.1/cities")
     Call<ResponseBody> getCities();
 
-    @GET("api/v2.1/locations?query=long%20%20beach")
-    Call<ResponseBody> getLocation();
+    @GET("api/v2.1/locations")
+    Call<ResponseBody> getLocation(@Query("latitude") double latitude, @Query("longitude") double longitude);
+
+    @GET("api/v2.1/location_details")
+    Call<ResponseBody> getLocationDetails(@Query("entity_id") int entity_id, @Query("entity_type") String entity_type);
 
     @GET("api/v2.1/dailymenu?res_id=1024")
     Call<ResponseBody> getDailyMenu();
