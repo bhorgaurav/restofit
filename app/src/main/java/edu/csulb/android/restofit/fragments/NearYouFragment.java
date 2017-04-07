@@ -3,7 +3,6 @@ package edu.csulb.android.restofit.fragments;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -12,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -20,11 +18,8 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.RestaurantAdapter;
@@ -33,15 +28,13 @@ import edu.csulb.android.restofit.api.ZomatoAPI;
 import edu.csulb.android.restofit.helpers.LocationHelper;
 import edu.csulb.android.restofit.helpers.PreferenceHelper;
 import edu.csulb.android.restofit.helpers.PreferenceKeys;
-import edu.csulb.android.restofit.obseravables.FilterManager;
-import edu.csulb.android.restofit.pojos.LocationResponse;
 import edu.csulb.android.restofit.pojos.Restaurant;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NearYouFragment extends SuperFragment implements Observer {
+public class NearYouFragment extends SuperFragment {
 
     private RecyclerView recyclerViewRestaurants;
     private RestaurantAdapter restaurantAdapter;
@@ -98,7 +91,7 @@ public class NearYouFragment extends SuperFragment implements Observer {
             progressWheel.setVisibility(View.GONE);
         }
 
-        LocationHelper.getAddress(getContext(), new edu.csulb.android.restofit.helpers.Callback() {
+        LocationHelper.getAddress(getContext(), new edu.csulb.android.restofit.interfaces.Callback() {
             @Override
             public void success(Object object) {
                 Address address = (Address) object;
@@ -196,15 +189,9 @@ public class NearYouFragment extends SuperFragment implements Observer {
             buildAlertMessageNoGps();
         } else {
             progressWheel.spin();
+            progressWheel.setVisibility(View.VISIBLE);
             populateList();
         }
-    }
-
-    @Override
-    public void update(java.util.Observable o, Object arg) {
-        String query = ((FilterManager) o).getQuery();
-        if (restaurantAdapter != null)
-            restaurantAdapter.filter(query);
     }
 
     private void buildAlertMessageNoGps() {

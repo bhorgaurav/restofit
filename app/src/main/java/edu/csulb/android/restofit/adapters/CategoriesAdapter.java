@@ -1,5 +1,6 @@
 package edu.csulb.android.restofit.adapters;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.csulb.android.restofit.R;
+import edu.csulb.android.restofit.activities.RestaurantActivity;
+import edu.csulb.android.restofit.activities.RestaurantResultsActivity;
+import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.pojos.Category;
 
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.ViewHolder> {
@@ -30,8 +34,17 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Category category = filteredCategories.get(position);
+        final Category category = filteredCategories.get(position);
         holder.textViewCategoryName.setText(category.name);
+        holder.textViewCategoryName.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(v.getContext(), RestaurantResultsActivity.class);
+                i.putExtra(StaticMembers.IntentFlags.CATEGORY, category);
+                v.getContext().startActivity(i);
+            }
+        });
     }
 
     @Override

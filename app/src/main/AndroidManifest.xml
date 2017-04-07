@@ -26,7 +26,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.RestaurantActivity"></activity>
+        <activity
+            android:name=".activities.RestaurantActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.RestaurantResultsActivity"
+            android:parentActivityName=".activities.MainActivity" />
     </application>
 
 </manifest>

@@ -25,7 +25,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 NearYouFragment tab1 = new NearYouFragment();
-                filterManager.addObserver(tab1);
                 return tab1;
             case 1:
                 CategoriesFragment tab2 = new CategoriesFragment();
