@@ -1,12 +1,14 @@
 package edu.csulb.android.restofit.activities;
 
 import android.Manifest;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.fence.AwarenessFence;
+import com.google.android.gms.awareness.fence.DetectedActivityFence;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceUpdateRequest;
 import com.google.android.gms.awareness.fence.HeadphoneFence;
@@ -40,6 +43,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.List;
 
+import br.com.goncalves.pugnotification.notification.PugNotification;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.PagerAdapter;
 import edu.csulb.android.restofit.api.APIClient;
@@ -224,11 +228,31 @@ public class MainActivity extends SuperActivity {
 
             Log.d(TAG, "Fence Receiver Received");
 
-            if (TextUtils.equals(fenceState.getFenceKey(), StaticMembers.FenceKeys.HEADPHONES)) {
+            if (TextUtils.equals(fenceState.getFenceKey(), StaticMembers.FenceKeys.HEADPHONES_RUNNING_OR_PLUGGED_IN)) {
                 switch (fenceState.getCurrentState()) {
                     case FenceState.TRUE:
                         Log.i(TAG, "Fence > Headphones are plugged in.");
-                        Toast.makeText(context, "Fence > Headphones are plugged in.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Fence > " + StaticMembers.FenceKeys.HEADPHONES_RUNNING_OR_PLUGGED_IN, Toast.LENGTH_SHORT).show();
+
+                        Location l = LocationHelper.getLastKnownLocation(context);
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("q", "robeks jamba");
+                        bundle.putString("radius", "10000");
+                        bundle.putString("lat", String.valueOf(l.getLatitude()));
+                        bundle.putString("lon", String.valueOf(l.getLongitude()));
+
+                        PugNotification.with(context)
+                                .load()
+                                .title("Going for a run?")
+                                .message("Robecks and Jamba Juice near you.")
+                                .bigTextStyle("Robecks and Jamba Juice near you.")
+                                .smallIcon(R.drawable.pugnotification_ic_launcher)
+                                .largeIcon(R.drawable.pugnotification_ic_launcher)
+                                .flags(Notification.DEFAULT_ALL)
+                                .click(RestaurantResultsActivity.class, bundle)
+                                .simple()
+                                .build();
                         break;
                     case FenceState.FALSE:
                         Log.i(TAG, "Fence > Headphones are NOT plugged in.");
@@ -243,10 +267,14 @@ public class MainActivity extends SuperActivity {
 
     private void registerFences() {
         AwarenessFence headphoneFence = HeadphoneFence.during(HeadphoneState.PLUGGED_IN);
+        AwarenessFence runningFence = HeadphoneFence.during(DetectedActivityFence.RUNNING);
+        AwarenessFence runningWithHeadphones = AwarenessFence.and(headphoneFence, runningFence);
+        AwarenessFence headphoneRunningOrPluggedIn = AwarenessFence.or(runningWithHeadphones, headphoneFence);
+
         Awareness.FenceApi.updateFences(
                 mGoogleApiClient,
                 new FenceUpdateRequest.Builder()
-                        .addFence(StaticMembers.FenceKeys.HEADPHONES, headphoneFence, mFencePendingIntent)
+                        .addFence(StaticMembers.FenceKeys.HEADPHONES_RUNNING_OR_PLUGGED_IN, headphoneRunningOrPluggedIn, mFencePendingIntent)
                         .build())
                 .setResultCallback(new ResultCallback<Status>() {
                     @Override
@@ -265,7 +293,7 @@ public class MainActivity extends SuperActivity {
         Awareness.FenceApi.updateFences(
                 mGoogleApiClient,
                 new FenceUpdateRequest.Builder()
-                        .removeFence(StaticMembers.FenceKeys.HEADPHONES)
+                        .removeFence(StaticMembers.FenceKeys.HEADPHONES_RUNNING_OR_PLUGGED_IN)
                         .build()).setResultCallback(new ResultCallbacks<Status>() {
             @Override
             public void onSuccess(@NonNull Status status) {
