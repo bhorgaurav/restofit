@@ -46,16 +46,12 @@ public class NearYouFragment extends SuperFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_near_you, container, false);
-        if (!LocationHelper.statusCheck()) {
-            buildAlertMessageNoGps();
-        } else {
-            recyclerViewRestaurants = (RecyclerView) view.findViewById(R.id.recycler_view_restaurants);
-            recyclerViewRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
-            progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
-            progressWheel.setVisibility(View.VISIBLE);
-            progressWheel.spin();
-            populateList();
-        }
+        recyclerViewRestaurants = (RecyclerView) view.findViewById(R.id.recycler_view_restaurants);
+        recyclerViewRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
+        progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
+        progressWheel.setVisibility(View.VISIBLE);
+        progressWheel.spin();
+
         return view;
     }
 
