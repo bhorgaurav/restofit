@@ -15,7 +15,6 @@ import java.util.List;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.activities.RestaurantActivity;
 import edu.csulb.android.restofit.helpers.StaticMembers;
-import edu.csulb.android.restofit.pojos.Category;
 import edu.csulb.android.restofit.pojos.Restaurant;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.ViewHolder> {
@@ -75,19 +74,4 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
         }
     }
 
-    public void filter(String text) {
-        System.out.println("filter text: " + text);
-        filteredRestaurants.clear();
-        if (text.isEmpty()) {
-            filteredRestaurants.addAll(restaurants);
-        } else {
-            text = text.toLowerCase();
-            for (Restaurant item : restaurants) {
-                if (item.name.toLowerCase().contains(text) || item.address.toLowerCase().contains(text) || item.cuisines.toLowerCase().contains(text) || item.aggregate_rating.toLowerCase().contains(text)) {
-                    filteredRestaurants.add(item);
-                }
-            }
-        }
-        notifyDataSetChanged();
-    }
 }

@@ -1,4 +1,4 @@
-package edu.csulb.android.restofit.helpers;
+package edu.csulb.android.restofit.interfaces;
 
 public interface Callback {
 

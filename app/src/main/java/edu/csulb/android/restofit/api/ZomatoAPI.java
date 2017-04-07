@@ -1,9 +1,12 @@
 package edu.csulb.android.restofit.api;
 
+import java.util.Map;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 public interface ZomatoAPI {
 
@@ -32,6 +35,6 @@ public interface ZomatoAPI {
     Call<ResponseBody> getReviews();
 
     @GET("api/v2.1/search")
-    Call<ResponseBody> getSearchResults();
+    Call<ResponseBody> getSearchResults(@QueryMap Map<String, String> parameters);
 
 }

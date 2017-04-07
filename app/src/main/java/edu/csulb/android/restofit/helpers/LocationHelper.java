@@ -15,12 +15,16 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Locale;
 
+import edu.csulb.android.restofit.interfaces.Callback;
+
 public class LocationHelper {
 
     private static LocationManager locationManager;
+    public static Location location;
 
     public static void init(Context context) {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        getLastKnownLocation(context);
     }
 
     public static boolean statusCheck() {
@@ -42,7 +46,8 @@ public class LocationHelper {
             Toast.makeText(context, "GPS permission wasn't granted", Toast.LENGTH_SHORT).show();
             return null;
         }
-        return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        return location;
     }
 
     public static void getAddress(final Context context, final Callback callback) {
@@ -54,7 +59,7 @@ public class LocationHelper {
                     Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                     List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     callback.success(addresses.get(0));
-
+                    LocationHelper.location = location;
                     // Remove listener after we get the location update
                     locationManager.removeUpdates(this);
                 } catch (Exception e) {
