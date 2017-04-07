@@ -9,6 +9,6 @@ public class StaticMembers {
     }
 
     public class FenceKeys {
-        public static final String HEADPHONES = "headphoneFenceKey";
+        public static final String HEADPHONES_RUNNING_OR_PLUGGED_IN = "HEADPHONES_RUNNING_OR_PLUGGED_IN";
     }
 }

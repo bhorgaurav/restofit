@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import edu.csulb.android.restofit.R;
@@ -59,58 +60,69 @@ public class RestaurantResultsActivity extends AppCompatActivity {
             parameters.put("lon", String.valueOf(LocationHelper.location.getLongitude()));
             parameters.put("category", category.name);
             parameters.put("radius", "3000");
-
-            APIClient.getClient(ZomatoAPI.URL, true).create(ZomatoAPI.class).getSearchResults(parameters).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    try {
-                        if (response.isSuccessful()) {
-                            JSONArray array = new JSONObject(response.body().string()).getJSONArray("restaurants");
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject restaurant = array.getJSONObject(i).getJSONObject("restaurant");
-                                Restaurant r = new Restaurant();
-                                r.id = restaurant.getInt("id");
-                                r.name = restaurant.getString("name");
-                                r.average_cost = restaurant.getInt("average_cost_for_two");
-                                r.aggregate_rating = restaurant.getJSONObject("user_rating").getString("aggregate_rating");
-                                r.rating_color = restaurant.getJSONObject("user_rating").getString("rating_color");
-                                r.address = restaurant.getJSONObject("location").getString("address");
-                                r.cuisines = restaurant.getString("cuisines");
-                                r.currency = restaurant.getString("currency");
-                                r.longitude = restaurant.getJSONObject("location").getDouble("longitude");
-                                r.latitude = restaurant.getJSONObject("location").getDouble("latitude");
-                                r.is_delivering_now = restaurant.getInt("is_delivering_now");
-                                r.has_online_delivery = restaurant.getInt("has_online_delivery");
-                                restaurants.add(r);
-                            }
-                            restaurantAdapter = new RestaurantAdapter(restaurants);
-                            recyclerViewRestaurants.setAdapter(restaurantAdapter);
-
-                            progressWheel.stopSpinning();
-                            progressWheel.setVisibility(View.GONE);
-                        } else {
-                            progressWheel.stopSpinning();
-                            progressWheel.setVisibility(View.GONE);
-                            Toast.makeText(RestaurantResultsActivity.this, "Error fetching restaurants: " + response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        progressWheel.stopSpinning();
-                        progressWheel.setVisibility(View.GONE);
-                        Toast.makeText(RestaurantResultsActivity.this, "Error fetching restaurants: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    t.printStackTrace();
-                    progressWheel.stopSpinning();
-                    progressWheel.setVisibility(View.GONE);
-                    Toast.makeText(RestaurantResultsActivity.this, "Error fetching restaurants: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            populateList(parameters);
         } else {
             // Opened from search
+            Map<String, String> parameters = new TreeMap<>();
+
+            Bundle bundle = getIntent().getExtras();
+            Set<String> keys = bundle.keySet();
+            for (String key : keys) {
+                parameters.put(key, bundle.getString(key));
+            }
+            populateList(parameters);
         }
+    }
+
+    private void populateList(Map<String, String> parameters) {
+        APIClient.getClient(ZomatoAPI.URL, true).create(ZomatoAPI.class).getSearchResults(parameters).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    if (response.isSuccessful()) {
+                        JSONArray array = new JSONObject(response.body().string()).getJSONArray("restaurants");
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject restaurant = array.getJSONObject(i).getJSONObject("restaurant");
+                            Restaurant r = new Restaurant();
+                            r.id = restaurant.getInt("id");
+                            r.name = restaurant.getString("name");
+                            r.average_cost = restaurant.getInt("average_cost_for_two");
+                            r.aggregate_rating = restaurant.getJSONObject("user_rating").getString("aggregate_rating");
+                            r.rating_color = restaurant.getJSONObject("user_rating").getString("rating_color");
+                            r.address = restaurant.getJSONObject("location").getString("address");
+                            r.cuisines = restaurant.getString("cuisines");
+                            r.currency = restaurant.getString("currency");
+                            r.longitude = restaurant.getJSONObject("location").getDouble("longitude");
+                            r.latitude = restaurant.getJSONObject("location").getDouble("latitude");
+                            r.is_delivering_now = restaurant.getInt("is_delivering_now");
+                            r.has_online_delivery = restaurant.getInt("has_online_delivery");
+                            restaurants.add(r);
+                        }
+                        restaurantAdapter = new RestaurantAdapter(restaurants);
+                        recyclerViewRestaurants.setAdapter(restaurantAdapter);
+
+                        progressWheel.stopSpinning();
+                        progressWheel.setVisibility(View.GONE);
+                    } else {
+                        progressWheel.stopSpinning();
+                        progressWheel.setVisibility(View.GONE);
+                        Toast.makeText(RestaurantResultsActivity.this, "Error fetching restaurants: " + response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    progressWheel.stopSpinning();
+                    progressWheel.setVisibility(View.GONE);
+                    Toast.makeText(RestaurantResultsActivity.this, "Error fetching restaurants: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+                progressWheel.stopSpinning();
+                progressWheel.setVisibility(View.GONE);
+                Toast.makeText(RestaurantResultsActivity.this, "Error fetching restaurants: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
