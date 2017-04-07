@@ -1,8 +1,7 @@
-package edu.csulb.android.restofit.utils;
+package edu.csulb.android.restofit.helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 
 public class PreferenceHelper {
 

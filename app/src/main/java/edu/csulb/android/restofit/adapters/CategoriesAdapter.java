@@ -25,8 +25,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
     @Override
@@ -40,11 +39,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         return filteredCategories.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textViewCategoryName;
+        TextView textViewCategoryName;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             textViewCategoryName = (TextView) view.findViewById(R.id.text_view_category_name);
         }

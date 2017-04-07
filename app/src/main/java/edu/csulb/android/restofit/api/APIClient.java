@@ -2,8 +2,8 @@ package edu.csulb.android.restofit.api;
 
 import java.io.IOException;
 
-import edu.csulb.android.restofit.utils.PreferenceHelper;
-import edu.csulb.android.restofit.utils.PreferenceKeys;
+import edu.csulb.android.restofit.helpers.PreferenceHelper;
+import edu.csulb.android.restofit.helpers.PreferenceKeys;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
