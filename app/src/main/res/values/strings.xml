@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">RestoFit</string>
     <string name="search_text">Search</string>
+    <string name="google_awareness_api_key">AIzaSyDCxY5pYTsKhOSzVHuxZyx_vryMjd3Ivi0</string>
 </resources>

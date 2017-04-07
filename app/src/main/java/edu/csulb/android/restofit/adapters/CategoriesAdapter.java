@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.csulb.android.restofit.R;
-import edu.csulb.android.restofit.activities.RestaurantActivity;
 import edu.csulb.android.restofit.activities.RestaurantResultsActivity;
 import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.pojos.Category;
