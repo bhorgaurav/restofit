@@ -1,20 +1,37 @@
 package edu.csulb.android.restofit.activities;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.awareness.Awareness;
+import com.google.android.gms.awareness.fence.AwarenessFence;
+import com.google.android.gms.awareness.fence.FenceState;
+import com.google.android.gms.awareness.fence.FenceUpdateRequest;
+import com.google.android.gms.awareness.fence.HeadphoneFence;
+import com.google.android.gms.awareness.state.HeadphoneState;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.ResultCallbacks;
+import com.google.android.gms.common.api.Status;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -27,9 +44,11 @@ import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.PagerAdapter;
 import edu.csulb.android.restofit.api.APIClient;
 import edu.csulb.android.restofit.api.YelpAPI;
+import edu.csulb.android.restofit.helpers.AwarenessHelper;
 import edu.csulb.android.restofit.helpers.LocationHelper;
 import edu.csulb.android.restofit.helpers.PreferenceHelper;
 import edu.csulb.android.restofit.helpers.PreferenceKeys;
+import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.obseravables.FilterManager;
 import edu.csulb.android.restofit.pojos.TokenResponse;
 import retrofit2.Call;
@@ -41,9 +60,13 @@ import retrofit2.Response;
 **/
 public class MainActivity extends SuperActivity {
 
+    private PendingIntent mFencePendingIntent;
     private TabLayout tabLayout;
     private MenuItem search;
     private FilterManager filterManager;
+    private GoogleApiClient mGoogleApiClient;
+    private HeadphoneFenceBroadcastReceiver fenceReceiver;
+    private String TAG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +78,16 @@ public class MainActivity extends SuperActivity {
 
         PreferenceHelper.init(getApplicationContext());
         LocationHelper.init(getApplicationContext());
+        AwarenessHelper.init(getApplicationContext());
+
+        fenceReceiver = new HeadphoneFenceBroadcastReceiver();
+        Intent intent = new Intent(StaticMembers.IntentFlags.FENCE_RECEIVER_ACTION);
+        mFencePendingIntent = PendingIntent.getBroadcast(MainActivity.this, 10001, intent, 0);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Awareness.API)
+                .build();
+        mGoogleApiClient.connect();
 
         initYelp();
 
@@ -183,5 +216,80 @@ public class MainActivity extends SuperActivity {
         return true;
     }
 
+    private class HeadphoneFenceBroadcastReceiver extends BroadcastReceiver {
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            FenceState fenceState = FenceState.extract(intent);
+
+            Log.d(TAG, "Fence Receiver Received");
+
+            if (TextUtils.equals(fenceState.getFenceKey(), StaticMembers.FenceKeys.HEADPHONES)) {
+                switch (fenceState.getCurrentState()) {
+                    case FenceState.TRUE:
+                        Log.i(TAG, "Fence > Headphones are plugged in.");
+                        Toast.makeText(context, "Fence > Headphones are plugged in.", Toast.LENGTH_SHORT).show();
+                        break;
+                    case FenceState.FALSE:
+                        Log.i(TAG, "Fence > Headphones are NOT plugged in.");
+                        break;
+                    case FenceState.UNKNOWN:
+                        Log.i(TAG, "Fence > The headphone fence is in an unknown state.");
+                        break;
+                }
+            }
+        }
+    }
+
+    private void registerFences() {
+        AwarenessFence headphoneFence = HeadphoneFence.during(HeadphoneState.PLUGGED_IN);
+        Awareness.FenceApi.updateFences(
+                mGoogleApiClient,
+                new FenceUpdateRequest.Builder()
+                        .addFence(StaticMembers.FenceKeys.HEADPHONES, headphoneFence, mFencePendingIntent)
+                        .build())
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        TAG = "TAG";
+                        if (status.isSuccess()) {
+                            Log.i(TAG, "Fence was successfully registered.");
+                        } else {
+                            Log.e(TAG, "Fence could not be registered: " + status);
+                        }
+                    }
+                });
+    }
+
+    private void unregisterFences() {
+        Awareness.FenceApi.updateFences(
+                mGoogleApiClient,
+                new FenceUpdateRequest.Builder()
+                        .removeFence(StaticMembers.FenceKeys.HEADPHONES)
+                        .build()).setResultCallback(new ResultCallbacks<Status>() {
+            @Override
+            public void onSuccess(@NonNull Status status) {
+                Log.i(TAG, "Fence " + "headphoneFenceKey" + " successfully removed.");
+            }
+
+            @Override
+            public void onFailure(@NonNull Status status) {
+                Log.i(TAG, "Fence " + "headphoneFenceKey" + " could NOT be removed.");
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerFences();
+        registerReceiver(fenceReceiver, new IntentFilter(StaticMembers.IntentFlags.FENCE_RECEIVER_ACTION));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterFences();
+        unregisterReceiver(fenceReceiver);
+    }
 }

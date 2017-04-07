@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,7 +14,6 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -108,6 +106,9 @@ public class RestaurantActivity extends SuperActivity {
                 String geoCode = "geo:<" + restaurant.latitude + ">,<" + restaurant.longitude + ">&z=16?q=" + restaurant.name;
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoCode));
                 startActivity(intent);
+                break;
+            case R.id.button_booking:
+                Toast.makeText(this, "Booking to be added.", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
