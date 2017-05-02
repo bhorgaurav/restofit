@@ -15,14 +15,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class APIClient {
 
     private static Retrofit retrofit = null;
+    private static OkHttpClient client;
 
     public static Retrofit getClient(String API_URL, final boolean isZomato) {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient.Builder builder = new OkHttpClient.Builder().addInterceptor(interceptor);
-
-        builder.addInterceptor(new Interceptor() {
+        /*
+        * Credits: https://futurestud.io/tutorials/retrofit-add-custom-request-header
+        **/
+        client = new OkHttpClient.Builder().addInterceptor(interceptor).addInterceptor(new Interceptor() {
             /*
             * Credits: https://futurestud.io/tutorials/retrofit-add-custom-request-header
             **/
@@ -41,15 +43,19 @@ public class APIClient {
                 requestBuilder.method(original.method(), original.body());
                 return chain.proceed(requestBuilder.build());
             }
-        });
+        }).build();
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(builder.build())
+                .client(client)
                 .build();
 
         return retrofit;
+    }
+
+    public static void cancelAll() {
+        client.dispatcher().cancelAll();
     }
 
 }

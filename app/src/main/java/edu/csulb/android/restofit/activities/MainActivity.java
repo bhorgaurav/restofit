@@ -44,6 +44,8 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import java.util.List;
 
 import br.com.goncalves.pugnotification.notification.PugNotification;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.PagerAdapter;
 import edu.csulb.android.restofit.api.APIClient;
@@ -65,19 +67,28 @@ import retrofit2.Response;
 public class MainActivity extends SuperActivity {
 
     private PendingIntent mFencePendingIntent;
-    private TabLayout tabLayout;
+
+    @BindView(R.id.tab_layout)
+    TabLayout tabLayout;
+
     private MenuItem search;
     private FilterManager filterManager;
     private GoogleApiClient mGoogleApiClient;
     private HeadphoneFenceBroadcastReceiver fenceReceiver;
     private String TAG;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.pager)
+    ViewPager viewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         PreferenceHelper.init(getApplicationContext());
@@ -97,14 +108,12 @@ public class MainActivity extends SuperActivity {
 
         askPermissions();
 
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Near You"));
         tabLayout.addTab(tabLayout.newTab().setText("Categories"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         filterManager = new FilterManager();
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), filterManager);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -112,7 +121,11 @@ public class MainActivity extends SuperActivity {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                search.collapseActionView();
+                try {
+                    search.collapseActionView();
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
                 tabLayout.setVisibility(View.VISIBLE);
                 viewPager.setCurrentItem(tab.getPosition());
             }

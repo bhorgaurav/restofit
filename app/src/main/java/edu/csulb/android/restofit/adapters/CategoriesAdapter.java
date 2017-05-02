@@ -10,6 +10,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.activities.RestaurantResultsActivity;
 import edu.csulb.android.restofit.helpers.StaticMembers;
@@ -53,11 +55,12 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.text_view_category_name)
         TextView textViewCategoryName;
 
         ViewHolder(View view) {
             super(view);
-            textViewCategoryName = (TextView) view.findViewById(R.id.text_view_category_name);
+            ButterKnife.bind(this, view);
         }
     }
 

@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.RestaurantAdapter;
 import edu.csulb.android.restofit.api.APIClient;
@@ -36,22 +40,25 @@ import retrofit2.Response;
 
 public class NearYouFragment extends SuperFragment {
 
-    private RecyclerView recyclerViewRestaurants;
+    @BindView(R.id.recycler_view_restaurants)
+    RecyclerView recyclerViewRestaurants;
+
+    @BindView(R.id.progress_wheel)
+    ProgressWheel progressWheel;
+
     private RestaurantAdapter restaurantAdapter;
     private List<Restaurant> restaurants = new ArrayList<>();
-    private ProgressWheel progressWheel;
+    private Unbinder unbinder;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_near_you, container, false);
-        recyclerViewRestaurants = (RecyclerView) view.findViewById(R.id.recycler_view_restaurants);
-        recyclerViewRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
-        progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
-        progressWheel.setVisibility(View.VISIBLE);
-        progressWheel.spin();
+        unbinder = ButterKnife.bind(this, view);
+        ButterKnife.setDebug(true);
 
+        recyclerViewRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
+        updateUI(true, null);
         return view;
     }
 
@@ -79,12 +86,10 @@ public class NearYouFragment extends SuperFragment {
                 restaurantAdapter = new RestaurantAdapter(restaurants);
                 recyclerViewRestaurants.setAdapter(restaurantAdapter);
             }
-            progressWheel.stopSpinning();
-            progressWheel.setVisibility(View.GONE);
+            updateUI(false, null);
         } catch (Exception e) {
             e.printStackTrace();
-            progressWheel.stopSpinning();
-            progressWheel.setVisibility(View.GONE);
+            updateUI(false, e.getMessage());
         }
 
         LocationHelper.getAddress(getContext(), new edu.csulb.android.restofit.interfaces.Callback() {
@@ -128,52 +133,38 @@ public class NearYouFragment extends SuperFragment {
                                                             restaurantAdapter = new RestaurantAdapter(restaurants);
                                                             recyclerViewRestaurants.setAdapter(restaurantAdapter);
 
-                                                            progressWheel.stopSpinning();
-                                                            progressWheel.setVisibility(View.GONE);
+                                                            updateUI(false, null);
                                                         } catch (Exception e) {
-
-                                                            progressWheel.stopSpinning();
-                                                            progressWheel.setVisibility(View.GONE);
                                                             e.printStackTrace();
-                                                            Toast.makeText(getContext(), "Error fetching restaurants: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            updateUI(false, "Error fetching restaurants: " + e.getMessage());
                                                         }
                                                     }
 
                                                     @Override
                                                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                                                         t.printStackTrace();
-                                                        progressWheel.stopSpinning();
-                                                        progressWheel.setVisibility(View.GONE);
-                                                        Toast.makeText(getContext(), "Error fetching restaurants: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        updateUI(false, "Error fetching restaurants: " + t.getMessage());
                                                     }
                                                 });
                                     } else {
-                                        progressWheel.stopSpinning();
-                                        progressWheel.setVisibility(View.GONE);
-                                        Toast.makeText(getContext(), "Error fetching restaurants: " + response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                                        updateUI(false, "Error fetching restaurants: " + response.errorBody().string());
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    progressWheel.stopSpinning();
-                                    progressWheel.setVisibility(View.GONE);
-                                    Toast.makeText(getContext(), "Error fetching restaurants: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    updateUI(false, "Error fetching restaurants: " + e.getMessage());
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                progressWheel.stopSpinning();
-                                progressWheel.setVisibility(View.GONE);
-                                Toast.makeText(getContext(), "Error fetching restaurants: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                updateUI(false, "Error fetching restaurants: " + t.getMessage());
                             }
                         });
             }
 
             @Override
             public void fail(Object object) {
-                progressWheel.stopSpinning();
-                progressWheel.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Error fetching restaurants.", Toast.LENGTH_SHORT).show();
+                updateUI(false, "Error fetching restaurants.");
             }
         });
     }
@@ -184,8 +175,7 @@ public class NearYouFragment extends SuperFragment {
         if (!LocationHelper.statusCheck()) {
             buildAlertMessageNoGps();
         } else {
-            progressWheel.spin();
-            progressWheel.setVisibility(View.VISIBLE);
+            updateUI(true, null);
             populateList();
         }
     }
@@ -202,12 +192,32 @@ public class NearYouFragment extends SuperFragment {
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         dialog.cancel();
-                        progressWheel.stopSpinning();
-                        progressWheel.setVisibility(View.GONE);
-                        Toast.makeText(getContext(), "The application needs GPS to work correctly.", Toast.LENGTH_LONG).show();
+                        updateUI(false, "The application needs GPS to work correctly.");
                     }
                 });
         final AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void updateUI(boolean show, String message) {
+        if (progressWheel != null) {
+            if (show) {
+                progressWheel.spin();
+                progressWheel.setVisibility(View.VISIBLE);
+            } else {
+                progressWheel.stopSpinning();
+                progressWheel.setVisibility(View.GONE);
+                if (!TextUtils.isEmpty(message)) {
+                    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        APIClient.cancelAll();
+        unbinder.unbind();
     }
 }

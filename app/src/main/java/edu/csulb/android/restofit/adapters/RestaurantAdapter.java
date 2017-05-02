@@ -12,6 +12,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.activities.RestaurantActivity;
 import edu.csulb.android.restofit.helpers.StaticMembers;
@@ -59,18 +61,27 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name, average_cost, address, aggregate_rating, cuisines;
+        @BindView(R.id.text_view_restaurant_name)
+        TextView name;
+
+        @BindView(R.id.text_view_average_cost)
+        TextView average_cost;
+
+        @BindView(R.id.text_view_address)
+        TextView address;
+
+        @BindView(R.id.text_view_restaurant_rating)
+        TextView aggregate_rating;
+
+        @BindView(R.id.text_view_cuisine)
+        TextView cuisines;
+
+        @BindView(R.id.card_view_restaurant)
         CardView cardView;
 
         ViewHolder(View view) {
             super(view);
-
-            cardView = (CardView) view.findViewById(R.id.card_view_restaurant);
-            name = (TextView) view.findViewById(R.id.text_view_restaurant_name);
-            average_cost = (TextView) view.findViewById(R.id.text_view_average_cost);
-            address = (TextView) view.findViewById(R.id.text_view_address);
-            aggregate_rating = (TextView) view.findViewById(R.id.text_view_restaurant_rating);
-            cuisines = (TextView) view.findViewById(R.id.text_view_cuisine);
+            ButterKnife.bind(this, view);
         }
     }
 

@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.RestaurantAdapter;
 import edu.csulb.android.restofit.api.APIClient;
@@ -34,19 +36,22 @@ import retrofit2.Response;
 
 public class RestaurantResultsActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerViewRestaurants;
+    @BindView(R.id.recycler_view_restaurants)
+    RecyclerView recyclerViewRestaurants;
+
     private RestaurantAdapter restaurantAdapter;
     private List<Restaurant> restaurants = new ArrayList<>();
-    private ProgressWheel progressWheel;
+
+    @BindView(R.id.progress_wheel)
+    ProgressWheel progressWheel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_near_you);
+        ButterKnife.bind(this);
 
-        recyclerViewRestaurants = (RecyclerView) findViewById(R.id.recycler_view_restaurants);
         recyclerViewRestaurants.setLayoutManager(new LinearLayoutManager(this));
-        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         progressWheel.setVisibility(View.VISIBLE);
         progressWheel.spin();
 
