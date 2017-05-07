@@ -1,4 +1,4 @@
-package edu.csulb.android.restofit.activities;
+package edu.csulb.android.restofit.views.activities;
 
 import android.support.v7.app.AppCompatActivity;
 

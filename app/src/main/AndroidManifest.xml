@@ -26,7 +26,7 @@
             android:value="@string/google_awareness_api_key" />
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".views.activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.app.searchable"
@@ -39,12 +39,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.RestaurantActivity"
-            android:parentActivityName=".activities.MainActivity"
+            android:name=".views.activities.RestaurantActivity"
+            android:parentActivityName=".views.activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.RestaurantResultsActivity"
-            android:parentActivityName=".activities.MainActivity" />
+            android:name=".views.activities.RestaurantResultsActivity"
+            android:parentActivityName=".views.activities.MainActivity" />
     </application>
 
 </manifest>

@@ -4,31 +4,31 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import edu.csulb.android.restofit.fragments.CategoriesFragment;
-import edu.csulb.android.restofit.fragments.NearYouFragment;
 import edu.csulb.android.restofit.obseravables.FilterManager;
+import edu.csulb.android.restofit.views.fragments.CategoriesFragment;
+import edu.csulb.android.restofit.views.fragments.NearYouFragment;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
-    private int numOfTabs;
-    private FilterManager filterManager;
+    private int mNumOfTabs;
+    private FilterManager mFilterManager;
 
-    public PagerAdapter(FragmentManager manager, int numOfTabs, FilterManager filterManager) {
+    public PagerAdapter(FragmentManager manager, int mNumOfTabs, FilterManager mFilterManager) {
         super(manager);
-        this.numOfTabs = numOfTabs;
-        this.filterManager = filterManager;
+        this.mNumOfTabs = mNumOfTabs;
+        this.mFilterManager = mFilterManager;
     }
 
     @Override
     public Fragment getItem(int position) {
-
         switch (position) {
             case 0:
                 NearYouFragment tab1 = new NearYouFragment();
+                mFilterManager.addObserver(tab1);
                 return tab1;
             case 1:
                 CategoriesFragment tab2 = new CategoriesFragment();
-                filterManager.addObserver(tab2);
+                mFilterManager.addObserver(tab2);
                 return tab2;
             default:
                 return null;
@@ -37,6 +37,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return numOfTabs;
+        return mNumOfTabs;
     }
 }

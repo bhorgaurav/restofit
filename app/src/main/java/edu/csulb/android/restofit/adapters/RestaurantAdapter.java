@@ -15,17 +15,17 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.csulb.android.restofit.R;
-import edu.csulb.android.restofit.activities.RestaurantActivity;
 import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.pojos.Restaurant;
+import edu.csulb.android.restofit.views.activities.RestaurantActivity;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.ViewHolder> {
 
-    private List<Restaurant> restaurants, filteredRestaurants = new ArrayList<>();
+    private List<Restaurant> mRestaurants, mFilteredRestaurants = new ArrayList<>();
 
-    public RestaurantAdapter(List<Restaurant> restaurants) {
-        this.restaurants = restaurants;
-        filteredRestaurants.addAll(this.restaurants);
+    public RestaurantAdapter(List<Restaurant> mRestaurants) {
+        this.mRestaurants = mRestaurants;
+        mFilteredRestaurants.addAll(this.mRestaurants);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Restaurant restaurant = filteredRestaurants.get(position);
+        final Restaurant restaurant = mFilteredRestaurants.get(position);
         holder.name.setText(restaurant.name);
         holder.cuisines.setText("Cuisine: " + restaurant.cuisines);
         holder.aggregate_rating.setText(restaurant.aggregate_rating);
@@ -56,7 +56,42 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return filteredRestaurants.size();
+        return mFilteredRestaurants.size();
+    }
+
+    public void add(Restaurant restaurants) {
+        this.mRestaurants.add(restaurants);
+        this.mFilteredRestaurants.add(restaurants);
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<Restaurant> restaurants) {
+        int size = this.mFilteredRestaurants.size();
+        this.mRestaurants.addAll(restaurants);
+        this.mFilteredRestaurants.addAll(restaurants);
+        notifyItemMoved(size - 1, this.mFilteredRestaurants.size());
+    }
+
+    public void clear() {
+        int size = this.mFilteredRestaurants.size();
+        this.mFilteredRestaurants.clear();
+        this.mRestaurants.clear();
+        notifyItemRangeRemoved(0, size);
+    }
+
+    public void filter(String text) {
+        mFilteredRestaurants.clear();
+        if (text.isEmpty()) {
+            mFilteredRestaurants.addAll(mRestaurants);
+        } else {
+            text = text.toLowerCase();
+            for (Restaurant item : mRestaurants) {
+                if (item.name.toLowerCase().contains(text) || item.cuisines.toLowerCase().contains(text) || item.address.toLowerCase().contains(text)) {
+                    mFilteredRestaurants.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

@@ -9,7 +9,7 @@
 
         <variable
             name="handler"
-            type="edu.csulb.android.restofit.activities.RestaurantActivity" />
+            type="edu.csulb.android.restofit.views.activities.RestaurantActivity" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"

@@ -1,4 +1,4 @@
-package edu.csulb.android.restofit.activities;
+package edu.csulb.android.restofit.views.activities;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -30,30 +30,30 @@ import retrofit2.Response;
 
 public class RestaurantActivity extends SuperActivity {
 
-    private Restaurant restaurant;
-    private ImageView imageView;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
+    private Restaurant mRestaurant;
+    private ImageView mImageViewFeatured;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityRestaurantBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_restaurant);
-        restaurant = (Restaurant) getIntent().getSerializableExtra(StaticMembers.IntentFlags.RESTAURANT);
-        binding.setRestaurant(restaurant);
+        mRestaurant = (Restaurant) getIntent().getSerializableExtra(StaticMembers.IntentFlags.RESTAURANT);
+        binding.setRestaurant(mRestaurant);
         binding.setHandler(this);
 
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(restaurant.name);
-        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-        imageView = (ImageView) findViewById(R.id.image_view_header);
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbarLayout.setTitle(mRestaurant.name);
+        mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+        mImageViewFeatured = (ImageView) findViewById(R.id.image_view_header);
 
         Map<String, String> parameters = new TreeMap<>();
-        parameters.put("term", restaurant.name);
-        parameters.put("location", restaurant.address);
+        parameters.put("term", mRestaurant.name);
+        parameters.put("location", mRestaurant.address);
         parameters.put("radius", "1000");
         parameters.put("limit", "1");
-        parameters.put("latitude", String.valueOf(restaurant.latitude));
-        parameters.put("longitude", String.valueOf(restaurant.longitude));
+        parameters.put("latitude", String.valueOf(mRestaurant.latitude));
+        parameters.put("longitude", String.valueOf(mRestaurant.longitude));
         APIClient.getClient(YelpAPI.URL, false).create(YelpAPI.class).search(parameters).enqueue(new Callback<ResponseBody>() {
 
             @Override
@@ -62,9 +62,9 @@ public class RestaurantActivity extends SuperActivity {
                     if (response.isSuccessful()) {
                         JSONObject jsonObject = new JSONObject(response.body().string()).getJSONArray("businesses").getJSONObject(0);
                         if (jsonObject != null) {
-                            restaurant.imageLink = jsonObject.getString("image_url");
-                            restaurant.phone = jsonObject.getString("phone");
-                            Picasso.with(getApplicationContext()).load(restaurant.imageLink).into(imageView);
+                            mRestaurant.imageLink = jsonObject.getString("image_url");
+                            mRestaurant.phone = jsonObject.getString("phone");
+                            Picasso.with(getApplicationContext()).load(mRestaurant.imageLink).into(mImageViewFeatured);
                         }
                     } else {
                         System.out.println(response.errorBody().string());
@@ -94,8 +94,8 @@ public class RestaurantActivity extends SuperActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_call:
-                if (restaurant.phone != null) {
-                    Uri number = Uri.parse("tel:" + restaurant.phone);
+                if (mRestaurant.phone != null) {
+                    Uri number = Uri.parse("tel:" + mRestaurant.phone);
                     Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
                     startActivity(callIntent);
                 } else {
@@ -103,7 +103,7 @@ public class RestaurantActivity extends SuperActivity {
                 }
                 break;
             case R.id.button_show_map:
-                String geoCode = "geo:<" + restaurant.latitude + ">,<" + restaurant.longitude + ">&z=16?q=" + restaurant.name;
+                String geoCode = "geo:<" + mRestaurant.latitude + ">,<" + mRestaurant.longitude + ">&z=16?q=" + mRestaurant.name;
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoCode));
                 startActivity(intent);
                 break;

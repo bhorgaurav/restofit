@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
-            name="cat"
-            type="edu.csulb.android.restofit.viewmodels.CategoryViewModel" />
+            name="vm"
+            type="edu.csulb.android.restofit.viewmodels.RestaurantViewModel" />
     </data>
 
     <RelativeLayout
@@ -13,10 +14,10 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/categories"
+            android:id="@+id/restaurants"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical" />
+            android:padding="8dp" />
 
     </RelativeLayout>
 </layout>

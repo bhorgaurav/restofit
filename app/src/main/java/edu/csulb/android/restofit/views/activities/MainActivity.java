@@ -1,4 +1,4 @@
-package edu.csulb.android.restofit.activities;
+package edu.csulb.android.restofit.views.activities;
 
 import android.Manifest;
 import android.app.Notification;
@@ -8,14 +8,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -44,22 +43,13 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import java.util.List;
 
 import br.com.goncalves.pugnotification.notification.PugNotification;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.adapters.PagerAdapter;
-import edu.csulb.android.restofit.api.APIClient;
-import edu.csulb.android.restofit.api.YelpAPI;
-import edu.csulb.android.restofit.helpers.AwarenessHelper;
+import edu.csulb.android.restofit.databinding.ActivityMainBinding;
 import edu.csulb.android.restofit.helpers.LocationHelper;
-import edu.csulb.android.restofit.helpers.PreferenceHelper;
-import edu.csulb.android.restofit.helpers.PreferenceKeys;
 import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.obseravables.FilterManager;
-import edu.csulb.android.restofit.pojos.TokenResponse;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import edu.csulb.android.restofit.viewmodels.MainViewModel;
 
 /*
 * Uses https://github.com/Karumi/Dexter for checking and requesting permissions
@@ -68,66 +58,51 @@ public class MainActivity extends SuperActivity {
 
     private PendingIntent mFencePendingIntent;
 
-    @BindView(R.id.tab_layout)
-    TabLayout tabLayout;
-
-    private MenuItem search;
-    private FilterManager filterManager;
+    private MenuItem mMenuItemSearch;
+    private FilterManager mFilterManager;
     private GoogleApiClient mGoogleApiClient;
-    private HeadphoneFenceBroadcastReceiver fenceReceiver;
-    private String TAG;
-
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-
-    @BindView(R.id.pager)
-    ViewPager viewPager;
+    private HeadphoneFenceBroadcastReceiver mFenceReceiver;
+    private static String TAG;
+    private MainViewModel vievModel;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        setSupportActionBar(binding.toolbar);
 
-        setSupportActionBar(toolbar);
+        vievModel = new MainViewModel(getApplicationContext());
 
-        PreferenceHelper.init(getApplicationContext());
-        LocationHelper.init(getApplicationContext());
-        AwarenessHelper.init(getApplicationContext());
-
-        fenceReceiver = new HeadphoneFenceBroadcastReceiver();
+        mFenceReceiver = new HeadphoneFenceBroadcastReceiver();
         Intent intent = new Intent(StaticMembers.IntentFlags.FENCE_RECEIVER_ACTION);
         mFencePendingIntent = PendingIntent.getBroadcast(MainActivity.this, 10001, intent, 0);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Awareness.API)
-                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Awareness.API).build();
         mGoogleApiClient.connect();
-
-        initYelp();
 
         askPermissions();
 
-        tabLayout.addTab(tabLayout.newTab().setText("Near You"));
-        tabLayout.addTab(tabLayout.newTab().setText("Categories"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Near You"));
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Categories"));
+        binding.tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        filterManager = new FilterManager();
+        mFilterManager = new FilterManager();
 
-        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), filterManager);
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), binding.tabLayout.getTabCount(), mFilterManager);
+        binding.pager.setAdapter(adapter);
+        binding.pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.tabLayout));
+        binding.tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 try {
-                    search.collapseActionView();
+                    mMenuItemSearch.collapseActionView();
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
-                tabLayout.setVisibility(View.VISIBLE);
-                viewPager.setCurrentItem(tab.getPosition());
+                binding.tabLayout.setVisibility(View.VISIBLE);
+                binding.pager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -161,33 +136,6 @@ public class MainActivity extends SuperActivity {
         }).check();
     }
 
-    private void initYelp() {
-        // Ensure that, you have the token. If not, request and save a new token.
-        if (!PreferenceHelper.contains(PreferenceKeys.YELP_TOKEN)) {
-            APIClient.getClient(YelpAPI.URL, false).create(YelpAPI.class).getTokenAccess(YelpAPI.CLIENT_ID, YelpAPI.CLIENT_SECRET, YelpAPI.GRANT_TYPE)
-                    .enqueue(new Callback<TokenResponse>() {
-
-                        @Override
-                        public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
-                            try {
-                                if (response.isSuccessful()) {
-                                    PreferenceHelper.save(PreferenceKeys.YELP_TOKEN, response.body().getAccessToken());
-                                } else {
-                                    System.out.println(response.errorBody().string());
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<TokenResponse> call, Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -195,37 +143,37 @@ public class MainActivity extends SuperActivity {
         inflater.inflate(R.menu.menu_main, menu);
 
         // To show/hide the tabLayout when searching
-        search = menu.findItem(R.id.search);
-        MenuItemCompat.setOnActionExpandListener(search, new MenuItemCompat.OnActionExpandListener() {
+        mMenuItemSearch = menu.findItem(R.id.search);
+        MenuItemCompat.setOnActionExpandListener(mMenuItemSearch, new MenuItemCompat.OnActionExpandListener() {
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                tabLayout.setVisibility(View.VISIBLE);
+                binding.tabLayout.setVisibility(View.VISIBLE);
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-                tabLayout.setVisibility(View.GONE);
+                binding.tabLayout.setVisibility(View.GONE);
                 return true;
             }
         });
 
         // To manage the searchView text
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) search.getActionView();
+        SearchView searchView = (SearchView) mMenuItemSearch.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                filterManager.setQuery(query);
+                mFilterManager.setQuery(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filterManager.setQuery(newText);
+                mFilterManager.setQuery(newText);
                 return false;
             }
         });
@@ -324,13 +272,13 @@ public class MainActivity extends SuperActivity {
     protected void onStart() {
         super.onStart();
         registerFences();
-        registerReceiver(fenceReceiver, new IntentFilter(StaticMembers.IntentFlags.FENCE_RECEIVER_ACTION));
+        registerReceiver(mFenceReceiver, new IntentFilter(StaticMembers.IntentFlags.FENCE_RECEIVER_ACTION));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         unregisterFences();
-        unregisterReceiver(fenceReceiver);
+        unregisterReceiver(mFenceReceiver);
     }
 }

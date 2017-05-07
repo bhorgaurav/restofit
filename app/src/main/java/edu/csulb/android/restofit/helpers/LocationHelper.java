@@ -28,7 +28,8 @@ public class LocationHelper {
     }
 
     public static boolean statusCheck() {
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        // GPS has to be on HIGH ACCURACY for this to work.
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     public static void listen(Context context, LocationListener locationListener) {
