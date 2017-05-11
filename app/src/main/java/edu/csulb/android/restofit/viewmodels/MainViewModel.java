@@ -1,7 +1,11 @@
 package edu.csulb.android.restofit.viewmodels;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.BaseObservable;
+
+import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 import edu.csulb.android.restofit.api.APIClient;
 import edu.csulb.android.restofit.api.YelpAPI;
@@ -10,6 +14,7 @@ import edu.csulb.android.restofit.helpers.LocationHelper;
 import edu.csulb.android.restofit.helpers.PreferenceHelper;
 import edu.csulb.android.restofit.helpers.PreferenceKeys;
 import edu.csulb.android.restofit.pojos.TokenResponse;
+import edu.csulb.android.restofit.views.activities.LoginActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,5 +56,11 @@ public class MainViewModel extends BaseObservable {
                         }
                     });
         }
+    }
+
+    public void logout() {
+        FirebaseAuth.getInstance().signOut();
+        LoginManager.getInstance().logOut();
+        mContext.startActivity(new Intent(mContext, LoginActivity.class));
     }
 }

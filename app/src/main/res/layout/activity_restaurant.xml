@@ -4,7 +4,7 @@
     <data>
 
         <variable
-            name="restaurant"
+            name="model"
             type="edu.csulb.android.restofit.viewmodels.RestaurantActivityViewModel" />
     </data>
 
@@ -37,7 +37,7 @@
                     android:layout_height="wrap_content"
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
-                    app:imageLink="@{restaurant.imageLink}"
+                    app:imageLink="@{model.imageLink}"
                     app:layout_collapseMode="parallax" />
 
                 <android.support.v7.widget.Toolbar
@@ -76,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="5dp"
                         android:gravity="center"
-                        android:text="@{restaurant.name}"
+                        android:text="@{model.name}"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -86,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:background="@android:color/holo_green_light"
                         android:padding="3dp"
-                        android:text="@{restaurant.aggregate_rating}"
+                        android:text="@{model.aggregate_rating}"
                         android:textColor="@android:color/white"
                         android:textSize="18sp" />
                 </LinearLayout>
@@ -96,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
                     android:gravity="center"
-                    android:text="@{restaurant.address}" />
+                    android:text="@{model.address}" />
 
                 <TextView
                     android:id="@+id/text_view_hours"
@@ -120,7 +120,7 @@
                         android:gravity="center"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
-                        android:text="@{`Cost for 2: `+restaurant.average_cost}" />
+                        android:text="@{`Cost for 2: `+model.average_cost}" />
 
                     <TextView
                         android:id="@+id/text_view_delivering_now"
@@ -130,14 +130,14 @@
                         android:gravity="center"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
-                        android:text="@{restaurant.is_delivering_now}" />
+                        android:text="@{model.is_delivering_now}" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/button_show_map"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="@{restaurant::showMap}"
+                    android:onClick="@{model::showMap}"
                     android:text="Show On Map" />
 
                 <Button
@@ -145,7 +145,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:onClick="@{restaurant::call}"
+                    android:onClick="@{model::call}"
                     android:text="Call" />
 
                 <Button
@@ -155,13 +155,21 @@
                     android:layout_gravity="end"
                     android:backgroundTint="#228B22"
                     android:gravity="center"
-                    android:onClick="@{restaurant::book}"
+                    android:onClick="@{model::book}"
                     android:text="Book Now"
                     android:textColor="#ffffff" />
 
             </LinearLayout>
 
         </android.support.v4.widget.NestedScrollView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:onClick="@{model::addReview}"
+            android:src="@android:drawable/ic_menu_edit" />
 
     </android.support.design.widget.CoordinatorLayout>
 

@@ -119,8 +119,8 @@ public class RestaurantViewModel extends BaseObservable {
             Category category = (Category) intent.getSerializableExtra(StaticMembers.IntentFlags.CATEGORY);
 
             Map<String, String> parameters = new TreeMap<>();
-            parameters.put("lat", String.valueOf(LocationHelper.location.getLatitude()));
-            parameters.put("lon", String.valueOf(LocationHelper.location.getLongitude()));
+            parameters.put("lat", String.valueOf(LocationHelper.getLatitude()));
+            parameters.put("lon", String.valueOf(LocationHelper.getLongitude()));
             parameters.put("category", category.name);
             parameters.put("radius", "3000");
             populateList(parameters);

@@ -20,8 +20,8 @@ public class RestaurantActivity extends SuperActivity {
         ActivityRestaurantBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_restaurant);
 
         Restaurant mRestaurant = (Restaurant) getIntent().getSerializableExtra(StaticMembers.IntentFlags.RESTAURANT);
-        mViewModel = new RestaurantActivityViewModel(getApplicationContext(), mRestaurant);
-        binding.setRestaurant(mViewModel);
+        mViewModel = new RestaurantActivityViewModel(mRestaurant);
+        binding.setModel(mViewModel);
         mViewModel.getRestaurantDetails();
 
         binding.collapsingToolbar.setTitle(mRestaurant.name);

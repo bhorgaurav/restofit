@@ -1,6 +1,5 @@
 package edu.csulb.android.restofit.viewmodels;
 
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
@@ -21,6 +20,7 @@ import java.util.TreeMap;
 import edu.csulb.android.restofit.api.APIClient;
 import edu.csulb.android.restofit.api.YelpAPI;
 import edu.csulb.android.restofit.pojos.Restaurant;
+import edu.csulb.android.restofit.views.activities.AddReviewActivity;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,10 +30,8 @@ public class RestaurantActivityViewModel extends BaseObservable {
 
     private Restaurant mRestaurant;
     private ObservableField<String> imageLink = new ObservableField<>();
-    private Context context;
 
-    public RestaurantActivityViewModel(Context context, Restaurant restaurant) {
-        this.context = context;
+    public RestaurantActivityViewModel(Restaurant restaurant) {
         this.mRestaurant = restaurant;
         this.imageLink.set(mRestaurant.imageLink);
     }
@@ -139,17 +137,21 @@ public class RestaurantActivityViewModel extends BaseObservable {
         if (!TextUtils.isEmpty(mRestaurant.phone)) {
             Uri number = Uri.parse("tel:" + mRestaurant.phone);
             Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
-            context.startActivity(callIntent);
+            view.getContext().startActivity(callIntent);
         }
     }
 
     public void showMap(View view) {
         String geoCode = "geo:<" + mRestaurant.latitude + ">,<" + mRestaurant.longitude + ">&z=16?q=" + mRestaurant.name;
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoCode));
-        context.startActivity(intent);
+        view.getContext().startActivity(intent);
     }
 
     public void book(View view) {
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mRestaurant.url)));
+        view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mRestaurant.url)));
+    }
+
+    public void addReview(View view) {
+        view.getContext().startActivity(new Intent(view.getContext(), AddReviewActivity.class));
     }
 }

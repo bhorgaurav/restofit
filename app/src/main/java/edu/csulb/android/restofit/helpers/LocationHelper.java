@@ -20,11 +20,27 @@ import edu.csulb.android.restofit.interfaces.Callback;
 public class LocationHelper {
 
     private static LocationManager locationManager;
-    public static Location location;
+    private static Location location;
 
     public static void init(Context context) {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         getLastKnownLocation(context);
+    }
+
+    public static double getLongitude() {
+        if (statusCheck()) {
+            return location.getLongitude();
+        } else {
+            return 0;
+        }
+    }
+
+    public static double getLatitude() {
+        if (statusCheck()) {
+            return location.getLatitude();
+        } else {
+            return 0;
+        }
     }
 
     public static boolean statusCheck() {

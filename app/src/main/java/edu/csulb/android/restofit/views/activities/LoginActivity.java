@@ -51,21 +51,29 @@ public class LoginActivity extends SuperActivity implements GoogleApiClient.OnCo
     private GoogleApiClient mGoogleApiClient;
     private ActivityLoginBinding binding;
     private CallbackManager mCallbackManager;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+        }
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         printKeyHash();
         initGoogleLogin();
         initFacebookLogin();
-        mAuth = FirebaseAuth.getInstance();
     }
 
     private void printKeyHash() {
         PackageInfo info;
         try {
-            info = getPackageManager().getPackageInfo("com.you.name", PackageManager.GET_SIGNATURES);
+            info = getPackageManager().getPackageInfo("edu.csulb.android.restofit", PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md;
                 md = MessageDigest.getInstance("SHA");
@@ -125,7 +133,6 @@ public class LoginActivity extends SuperActivity implements GoogleApiClient.OnCo
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
     private void signIn() {
@@ -176,7 +183,7 @@ public class LoginActivity extends SuperActivity implements GoogleApiClient.OnCo
         if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithCredential:success");
-            FirebaseUser user = mAuth.getCurrentUser();
+            currentUser = mAuth.getCurrentUser();
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } else {
             // If sign in fails, display a message to the user.

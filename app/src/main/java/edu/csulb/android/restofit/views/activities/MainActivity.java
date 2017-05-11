@@ -37,7 +37,7 @@ import edu.csulb.android.restofit.viewmodels.MainViewModel;
 public class MainActivity extends SuperActivity {
 
     private MenuItem mMenuItemSearch;
-//    private FilterManager mFilterManager;
+    //    private FilterManager mFilterManager;
     private FenceBroadcastReceiver mFenceReceiver;
     private MainViewModel viewModel;
     private ActivityMainBinding binding;
@@ -52,7 +52,6 @@ public class MainActivity extends SuperActivity {
         viewModel.initYelp();
 
         mFenceReceiver = new FenceBroadcastReceiver();
-
 
         askPermissions();
 
@@ -152,6 +151,17 @@ public class MainActivity extends SuperActivity {
 //        });
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+                viewModel.logout();
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
