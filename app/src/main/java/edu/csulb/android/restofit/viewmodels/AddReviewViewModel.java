@@ -10,6 +10,8 @@ import android.text.TextWatcher;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -19,8 +21,10 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 
+import edu.csulb.android.restofit.helpers.LocationHelper;
 import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.pojos.Review;
+import edu.csulb.android.restofit.receivers.AlarmReceiver;
 
 import static android.R.attr.key;
 
@@ -89,6 +93,9 @@ public class AddReviewViewModel extends BaseObservable {
             review.setId(mainRef.push().getKey());
         }
 
+        review.setLatitude(LocationHelper.getLatitude());
+        review.setLongitude(LocationHelper.getLongitude());
+
         if (bitmap != null) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 74, baos);
@@ -113,5 +120,25 @@ public class AddReviewViewModel extends BaseObservable {
         } else {
             FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_REVIEWS + restaurantId).child(review.getId()).setValue(review);
         }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Assume user leaves a review 1 hour after eating
+        int currentHour = StaticMembers.getCurrentHour();
+        if (currentHour >= 5 && currentHour < 10) {
+            // Just had breakfast
+            FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_FOOD_TIMES + user.getUid()).
+                    child(StaticMembers.CHILD_BREAKFAST).child(review.getId()).setValue(currentHour);
+        } else if (currentHour >= 10 && currentHour <= 16) {
+            // Just had lunch
+            FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_FOOD_TIMES + user.getUid()).
+                    child(StaticMembers.CHILD_LUNCH).child(review.getId()).setValue(currentHour);
+        } else {
+            // Dinner
+            FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_FOOD_TIMES + user.getUid()).
+                    child(StaticMembers.CHILD_DINNER).child(review.getId()).setValue(currentHour);
+        }
+
+        AlarmReceiver.handleIntent(context);
     }
 }

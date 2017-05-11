@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,7 @@ public class ReviewAdapter extends ArrayAdapter<Review> {
         ItemReviewBinding binding = ItemReviewBinding.inflate(inflater, parent, false);
         binding.setReview(review);
         System.out.println("review.getPhotoUrl() : " + review.getPhotoUrl());
-        if (review.getPhotoUrl() != null) {
+        if (!TextUtils.isEmpty(review.getPhotoUrl())) {
             Picasso.with(context).load(review.getPhotoUrl()).into(binding.imageViewReviewPhoto);
         } else {
             binding.imageViewReviewPhoto.setVisibility(View.GONE);

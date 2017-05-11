@@ -28,7 +28,7 @@ public class LocationHelper {
     }
 
     public static double getLongitude() {
-        if (statusCheck()) {
+        if (statusCheck() || location != null) {
             return location.getLongitude();
         } else {
             return 0;
@@ -36,7 +36,7 @@ public class LocationHelper {
     }
 
     public static double getLatitude() {
-        if (statusCheck()) {
+        if (statusCheck() || location != null) {
             return location.getLatitude();
         } else {
             return 0;

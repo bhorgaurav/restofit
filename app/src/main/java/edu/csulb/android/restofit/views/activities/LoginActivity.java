@@ -41,6 +41,7 @@ import java.security.NoSuchAlgorithmException;
 
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.databinding.ActivityLoginBinding;
+import edu.csulb.android.restofit.helpers.UserHelper;
 
 public class LoginActivity extends SuperActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
@@ -60,6 +61,7 @@ public class LoginActivity extends SuperActivity implements GoogleApiClient.OnCo
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
+            new UserHelper().startAlarm(getApplicationContext());
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
         }
@@ -184,6 +186,7 @@ public class LoginActivity extends SuperActivity implements GoogleApiClient.OnCo
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithCredential:success");
             currentUser = mAuth.getCurrentUser();
+            new UserHelper().startAlarm(getApplicationContext());
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } else {
             // If sign in fails, display a message to the user.
