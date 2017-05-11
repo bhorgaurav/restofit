@@ -11,12 +11,12 @@ import edu.csulb.android.restofit.views.fragments.NearYouFragment;
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
     private int mNumOfTabs;
-    private FilterManager mFilterManager;
+//    private FilterManager mFilterManager;
 
     public PagerAdapter(FragmentManager manager, int mNumOfTabs, FilterManager mFilterManager) {
         super(manager);
         this.mNumOfTabs = mNumOfTabs;
-        this.mFilterManager = mFilterManager;
+//        this.mFilterManager = mFilterManager;
     }
 
     @Override
@@ -24,11 +24,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 NearYouFragment tab1 = new NearYouFragment();
-                mFilterManager.addObserver(tab1);
+//                mFilterManager.addObserver(tab1);
                 return tab1;
             case 1:
                 CategoriesFragment tab2 = new CategoriesFragment();
-                mFilterManager.addObserver(tab2);
+//                mFilterManager.addObserver(tab2);
                 return tab2;
             default:
                 return null;

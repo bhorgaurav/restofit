@@ -23,7 +23,7 @@ public class CategoryViewModel extends BaseObservable {
     }
 
     public void fetchCategories() {
-        APIClient.getClient(ZomatoAPI.URL, true).create(ZomatoAPI.class).getCategories().enqueue(new Callback<ResponseBody>() {
+        APIClient.getClient(ZomatoAPI.URL, APIClient.CODE_ZOMATO).create(ZomatoAPI.class).getCategories().enqueue(new Callback<ResponseBody>() {
 
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

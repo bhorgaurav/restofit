@@ -62,7 +62,7 @@ public class RestaurantViewModel extends BaseObservable {
             public void success(Object object) {
 
                 Address address = (Address) object;
-                APIClient.getClient(ZomatoAPI.URL, true).create(ZomatoAPI.class).getLocation(address.getAddressLine(1), address.getLatitude(), address.getLongitude())
+                APIClient.getClient(ZomatoAPI.URL, APIClient.CODE_ZOMATO).create(ZomatoAPI.class).getLocation(address.getAddressLine(1), address.getLatitude(), address.getLongitude())
                         .enqueue(new Callback<ResponseBody>() {
 
                             @Override
@@ -71,7 +71,7 @@ public class RestaurantViewModel extends BaseObservable {
                                     if (response.isSuccessful()) {
                                         JSONObject json = new JSONObject(response.body().string()).getJSONArray("location_suggestions").getJSONObject(0);
 
-                                        APIClient.getClient(ZomatoAPI.URL, true).create(ZomatoAPI.class).getLocationDetails(json.getInt("entity_id"), json.getString("entity_type"))
+                                        APIClient.getClient(ZomatoAPI.URL, APIClient.CODE_ZOMATO).create(ZomatoAPI.class).getLocationDetails(json.getInt("entity_id"), json.getString("entity_type"))
                                                 .enqueue(new Callback<ResponseBody>() {
 
                                                     @Override
@@ -139,7 +139,7 @@ public class RestaurantViewModel extends BaseObservable {
 
     private void populateList(Map<String, String> parameters) {
 
-        APIClient.getClient(ZomatoAPI.URL, true).create(ZomatoAPI.class).getSearchResults(parameters).enqueue(new Callback<ResponseBody>() {
+        APIClient.getClient(ZomatoAPI.URL, APIClient.CODE_ZOMATO).create(ZomatoAPI.class).getSearchResults(parameters).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
@@ -172,6 +172,7 @@ public class RestaurantViewModel extends BaseObservable {
                 r.id = restaurant.getInt("id");
                 r.name = restaurant.getString("name");
                 r.average_cost = restaurant.getInt("average_cost_for_two");
+                r.url = restaurant.getString("url");
                 r.aggregate_rating = restaurant.getJSONObject("user_rating").getString("aggregate_rating");
                 r.rating_color = restaurant.getJSONObject("user_rating").getString("rating_color");
                 r.address = restaurant.getJSONObject("location").getString("address");

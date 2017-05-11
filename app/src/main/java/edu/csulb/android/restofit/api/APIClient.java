@@ -17,7 +17,11 @@ public class APIClient {
     private static Retrofit retrofit = null;
     private static OkHttpClient client;
 
-    public static Retrofit getClient(String API_URL, final boolean isZomato) {
+    public static final int CODE_ZOMATO = 1;
+    public static final int CODE_YELP = 2;
+    public static final int CODE_OPENTABLE = 3;
+
+    public static Retrofit getClient(String API_URL, final int apiCode) {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -33,11 +37,16 @@ public class APIClient {
                 Request original = chain.request();
                 Request.Builder requestBuilder = original.newBuilder();
 
-                if (isZomato) {
-                    requestBuilder.addHeader("user-key", ZomatoAPI.USER_KEY)
-                            .addHeader("Accept", "application/json");
-                } else {
-                    requestBuilder.addHeader("Authorization", "Bearer " + PreferenceHelper.getString(PreferenceKeys.YELP_TOKEN));
+                switch (apiCode) {
+                    case CODE_ZOMATO:
+                        requestBuilder.addHeader("user-key", ZomatoAPI.USER_KEY)
+                                .addHeader("Accept", "application/json");
+                        break;
+                    case CODE_YELP:
+                        requestBuilder.addHeader("Authorization", "Bearer " + PreferenceHelper.getString(PreferenceKeys.YELP_TOKEN));
+                        break;
+                    case CODE_OPENTABLE:
+                        break;
                 }
 
                 requestBuilder.method(original.method(), original.body());

@@ -24,14 +24,12 @@ public class MainViewModel extends BaseObservable {
         PreferenceHelper.init(context);
         LocationHelper.init(context);
         AwarenessHelper.init(context);
-
-        initYelp();
     }
 
-    private void initYelp() {
+    public void initYelp() {
         // Ensure that, you have the token. If not, request and save a new token.
         if (!PreferenceHelper.contains(PreferenceKeys.YELP_TOKEN)) {
-            APIClient.getClient(YelpAPI.URL, false).create(YelpAPI.class).getTokenAccess(YelpAPI.CLIENT_ID, YelpAPI.CLIENT_SECRET, YelpAPI.GRANT_TYPE)
+            APIClient.getClient(YelpAPI.URL, APIClient.CODE_YELP).create(YelpAPI.class).getTokenAccess(YelpAPI.CLIENT_ID, YelpAPI.CLIENT_SECRET, YelpAPI.GRANT_TYPE)
                     .enqueue(new Callback<TokenResponse>() {
 
                         @Override
