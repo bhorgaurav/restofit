@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.Map;
 import java.util.TreeMap;
 
+import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.api.APIClient;
 import edu.csulb.android.restofit.api.YelpAPI;
 import edu.csulb.android.restofit.pojos.Restaurant;
@@ -133,25 +134,26 @@ public class RestaurantActivityViewModel extends BaseObservable {
         });
     }
 
-    public void call(View view) {
-        if (!TextUtils.isEmpty(mRestaurant.phone)) {
-            Uri number = Uri.parse("tel:" + mRestaurant.phone);
-            Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
-            view.getContext().startActivity(callIntent);
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_call:
+                if (!TextUtils.isEmpty(mRestaurant.phone)) {
+                    Uri number = Uri.parse("tel:" + mRestaurant.phone);
+                    Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
+                    view.getContext().startActivity(callIntent);
+                }
+                break;
+            case R.id.button_booking:
+                view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mRestaurant.url)));
+                break;
+            case R.id.button_show_map:
+                String geoCode = "geo:<" + mRestaurant.latitude + ">,<" + mRestaurant.longitude + ">&z=16?q=" + mRestaurant.name;
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoCode));
+                view.getContext().startActivity(intent);
+                break;
+            case R.id.button_add_review:
+                view.getContext().startActivity(new Intent(view.getContext(), AddReviewActivity.class));
+                break;
         }
-    }
-
-    public void showMap(View view) {
-        String geoCode = "geo:<" + mRestaurant.latitude + ">,<" + mRestaurant.longitude + ">&z=16?q=" + mRestaurant.name;
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoCode));
-        view.getContext().startActivity(intent);
-    }
-
-    public void book(View view) {
-        view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mRestaurant.url)));
-    }
-
-    public void addReview(View view) {
-        view.getContext().startActivity(new Intent(view.getContext(), AddReviewActivity.class));
     }
 }

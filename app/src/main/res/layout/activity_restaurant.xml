@@ -137,7 +137,7 @@
                     android:id="@+id/button_show_map"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="@{model::showMap}"
+                    android:onClick="@{model::onClick}"
                     android:text="Show On Map" />
 
                 <Button
@@ -145,7 +145,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:onClick="@{model::call}"
+                    android:onClick="@{model::onClick}"
                     android:text="Call" />
 
                 <Button
@@ -155,7 +155,7 @@
                     android:layout_gravity="end"
                     android:backgroundTint="#228B22"
                     android:gravity="center"
-                    android:onClick="@{model::book}"
+                    android:onClick="@{model::onClick}"
                     android:text="Book Now"
                     android:textColor="#ffffff" />
 
@@ -164,11 +164,12 @@
         </android.support.v4.widget.NestedScrollView>
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/button_add_review"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            android:onClick="@{model::addReview}"
+            android:onClick="@{model::onClick}"
             android:src="@android:drawable/ic_menu_edit" />
 
     </android.support.design.widget.CoordinatorLayout>
