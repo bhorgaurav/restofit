@@ -2,15 +2,19 @@ package edu.csulb.android.restofit.viewmodels;
 
 import android.content.Intent;
 import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-import android.databinding.BindingAdapter;
-import android.databinding.ObservableField;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
-import com.squareup.picasso.Picasso;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
@@ -18,10 +22,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import edu.csulb.android.restofit.R;
+import edu.csulb.android.restofit.adapters.ReviewAdapter;
 import edu.csulb.android.restofit.api.APIClient;
 import edu.csulb.android.restofit.api.YelpAPI;
 import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.pojos.Restaurant;
+import edu.csulb.android.restofit.pojos.Review;
 import edu.csulb.android.restofit.views.activities.AddReviewActivity;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -31,11 +37,13 @@ import retrofit2.Response;
 public class RestaurantActivityViewModel extends BaseObservable {
 
     private Restaurant mRestaurant;
-    private ObservableField<String> imageLink = new ObservableField<>();
+    private ReviewAdapter adapter;
+    private ListView listViewReviews;
 
-    public RestaurantActivityViewModel(Restaurant restaurant) {
+    public RestaurantActivityViewModel(Restaurant restaurant, ReviewAdapter adapter, ListView listViewReviews) {
         this.mRestaurant = restaurant;
-        this.imageLink.set(mRestaurant.imageLink);
+        this.adapter = adapter;
+        this.listViewReviews = listViewReviews;
     }
 
     public String getName() {
@@ -62,16 +70,6 @@ public class RestaurantActivityViewModel extends BaseObservable {
         return mRestaurant.address;
     }
 
-    @Bindable
-    public String getImageLink() {
-        return imageLink.get();
-    }
-
-    @BindingAdapter({"bind:imageLink"})
-    public static void loadImage(ImageView imageView, String imageLink) {
-        Picasso.with(imageView.getContext()).load(imageLink).into(imageView);
-    }
-
     public void getRestaurantDetails() {
 
         final Map<String, String> parameters = new TreeMap<>();
@@ -87,6 +85,25 @@ public class RestaurantActivityViewModel extends BaseObservable {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     if (response.isSuccessful()) {
+
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference().child(StaticMembers.CHILD_REVIEWS + mRestaurant.id);
+                        myRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                adapter.clear();
+                                for (DataSnapshot father : dataSnapshot.getChildren()) {
+                                    adapter.add(father.getValue(Review.class));
+                                }
+                                setListViewHeightBasedOnChildren(listViewReviews);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
                         JSONObject jsonObject = new JSONObject(response.body().string()).getJSONArray("businesses").getJSONObject(0);
                         if (jsonObject != null) {
                             mRestaurant.imageLink = jsonObject.getString("image_url");
@@ -158,5 +175,26 @@ public class RestaurantActivityViewModel extends BaseObservable {
                 view.getContext().startActivity(i);
                 break;
         }
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, AbsListView.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
     }
 }

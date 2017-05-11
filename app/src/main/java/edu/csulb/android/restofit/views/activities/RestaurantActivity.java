@@ -4,10 +4,16 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
 import edu.csulb.android.restofit.R;
+import edu.csulb.android.restofit.adapters.ReviewAdapter;
 import edu.csulb.android.restofit.databinding.ActivityRestaurantBinding;
 import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.pojos.Restaurant;
+import edu.csulb.android.restofit.pojos.Review;
 import edu.csulb.android.restofit.viewmodels.RestaurantActivityViewModel;
 
 public class RestaurantActivity extends SuperActivity {
@@ -20,13 +26,19 @@ public class RestaurantActivity extends SuperActivity {
         ActivityRestaurantBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_restaurant);
 
         Restaurant mRestaurant = (Restaurant) getIntent().getSerializableExtra(StaticMembers.IntentFlags.RESTAURANT);
-        mViewModel = new RestaurantActivityViewModel(mRestaurant);
-        binding.setModel(mViewModel);
+
+        try {
+            Picasso.with(getApplicationContext()).load(mRestaurant.imageLink).into(binding.imageViewHeader);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ReviewAdapter adapter = new ReviewAdapter(getApplicationContext(), new ArrayList<Review>());
+        mViewModel = new RestaurantActivityViewModel(mRestaurant, adapter, binding.listViewReviews);
         mViewModel.getRestaurantDetails();
 
-        binding.collapsingToolbar.setTitle(mRestaurant.name);
-        binding.collapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-
+        binding.setModel(mViewModel);
+        binding.listViewReviews.setAdapter(adapter);
     }
 
     @Override

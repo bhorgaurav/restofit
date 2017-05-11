@@ -6,6 +6,7 @@ import android.databinding.BaseObservable;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import edu.csulb.android.restofit.api.APIClient;
 import edu.csulb.android.restofit.api.YelpAPI;
@@ -29,6 +30,7 @@ public class MainViewModel extends BaseObservable {
         PreferenceHelper.init(context);
         LocationHelper.init(context);
         AwarenessHelper.init(context);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
 
     public void initYelp() {

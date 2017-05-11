@@ -171,6 +171,7 @@ public class RestaurantViewModel extends BaseObservable {
                 Restaurant r = new Restaurant();
                 r.id = restaurant.getInt("id");
                 r.name = restaurant.getString("name");
+                r.imageLink = restaurant.getString("featured_image");
                 r.average_cost = restaurant.getInt("average_cost_for_two");
                 r.url = restaurant.getString("url");
                 r.aggregate_rating = restaurant.getJSONObject("user_rating").getString("aggregate_rating");

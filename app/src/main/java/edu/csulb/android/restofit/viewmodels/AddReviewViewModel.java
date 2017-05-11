@@ -107,6 +107,7 @@ public class AddReviewViewModel extends BaseObservable {
                     review.setPhotoUrl(taskSnapshot.getDownloadUrl().toString());
                     System.out.println("review.getPhotoUrl(): " + review.getPhotoUrl());
                     FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_REVIEWS + restaurantId).child(review.getId()).setValue(review);
+                    System.out.println("setPhotoUrl: " + review.getPhotoUrl());
                 }
             });
         } else {
