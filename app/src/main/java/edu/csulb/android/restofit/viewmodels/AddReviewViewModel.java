@@ -27,10 +27,12 @@ import static android.R.attr.key;
 public class AddReviewViewModel extends BaseObservable {
 
     private Context context;
+    private int restaurantId;
     private Review review;
 
-    public AddReviewViewModel(Context context, Review review) {
+    public AddReviewViewModel(Context context, int restaurantId, Review review) {
         this.context = context;
+        this.restaurantId = restaurantId;
         this.review = review;
     }
 
@@ -104,11 +106,11 @@ public class AddReviewViewModel extends BaseObservable {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     review.setPhotoUrl(taskSnapshot.getDownloadUrl().toString());
                     System.out.println("review.getPhotoUrl(): " + review.getPhotoUrl());
-                    FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_REVIEWS).child(review.getId()).setValue(review);
+                    FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_REVIEWS + restaurantId).child(review.getId()).setValue(review);
                 }
             });
         } else {
-            FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_REVIEWS).child(review.getId()).setValue(review);
+            FirebaseDatabase.getInstance().getReference().child(StaticMembers.CHILD_REVIEWS + restaurantId).child(review.getId()).setValue(review);
         }
     }
 }

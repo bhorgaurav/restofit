@@ -30,6 +30,7 @@ import java.util.List;
 import br.com.ilhasoft.support.validation.Validator;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.databinding.ActivityAddReviewBinding;
+import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.pojos.Review;
 import edu.csulb.android.restofit.viewmodels.AddReviewViewModel;
 
@@ -45,8 +46,11 @@ public class AddReviewActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        int restaurantId = getIntent().getIntExtra(StaticMembers.IntentFlags.RESTAURANT_ID, 0);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_review);
-        model = new AddReviewViewModel(getApplicationContext(), new Review("A", "B", "C", 2));
+        model = new AddReviewViewModel(getApplicationContext(), restaurantId, new Review("", "", "", 3));
         binding.setModel(model);
         validator = new Validator(binding);
 

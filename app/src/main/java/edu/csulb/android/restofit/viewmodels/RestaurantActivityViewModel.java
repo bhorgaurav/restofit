@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import edu.csulb.android.restofit.R;
 import edu.csulb.android.restofit.api.APIClient;
 import edu.csulb.android.restofit.api.YelpAPI;
+import edu.csulb.android.restofit.helpers.StaticMembers;
 import edu.csulb.android.restofit.pojos.Restaurant;
 import edu.csulb.android.restofit.views.activities.AddReviewActivity;
 import okhttp3.ResponseBody;
@@ -152,7 +153,9 @@ public class RestaurantActivityViewModel extends BaseObservable {
                 view.getContext().startActivity(intent);
                 break;
             case R.id.button_add_review:
-                view.getContext().startActivity(new Intent(view.getContext(), AddReviewActivity.class));
+                Intent i = new Intent(view.getContext(), AddReviewActivity.class);
+                i.putExtra(StaticMembers.IntentFlags.RESTAURANT_ID, mRestaurant.id);
+                view.getContext().startActivity(i);
                 break;
         }
     }
