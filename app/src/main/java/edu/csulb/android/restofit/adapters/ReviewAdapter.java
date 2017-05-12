@@ -53,6 +53,7 @@ public class ReviewAdapter extends ArrayAdapter<Review> {
         } else {
             binding.imageViewReviewPhoto.setVisibility(View.GONE);
         }
+        binding.textViewSentiment.setText("Sentiment Rating: " + review.getRating() + "/5");
         return binding.getRoot();
     }
 }

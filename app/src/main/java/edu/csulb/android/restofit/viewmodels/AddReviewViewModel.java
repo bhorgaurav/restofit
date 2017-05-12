@@ -5,7 +5,6 @@ import android.databinding.BaseObservable;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -42,8 +41,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.R.attr.key;
 
 public class AddReviewViewModel extends BaseObservable {
 
@@ -115,13 +112,12 @@ public class AddReviewViewModel extends BaseObservable {
 
     public void saveToDatabase(final Bitmap bitmap) {
 
-        if (TextUtils.isEmpty(review.getId())) {
-            DatabaseReference mainRef = FirebaseDatabase.getInstance().getReference(StaticMembers.CHILD_REVIEWS);
-            review.setId(mainRef.push().getKey());
-        }
+        DatabaseReference mainRef = FirebaseDatabase.getInstance().getReference(StaticMembers.CHILD_REVIEWS);
+        review.setId(mainRef.push().getKey());
 
         review.setLatitude(LocationHelper.getLatitude());
         review.setLongitude(LocationHelper.getLongitude());
+        review.setTimestamp(System.currentTimeMillis());
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -179,7 +175,7 @@ public class AddReviewViewModel extends BaseObservable {
                         byte[] bytes = baos.toByteArray();
 
                         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpg").build();
-                        StorageReference storageRef = FirebaseStorage.getInstance().getReference(key + ".jpg");
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference(review.getId() + ".jpg");
                         UploadTask uploadTask = storageRef.putBytes(bytes, metadata);
                         uploadTask.addOnFailureListener(new OnFailureListener() {
                             @Override

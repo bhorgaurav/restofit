@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "619776203922",
+    "firebase_url": "https://restofit-3e05b.firebaseio.com",
+    "project_id": "restofit-3e05b",
+    "storage_bucket": "restofit-3e05b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:619776203922:android:7b5c771c328022ed",
+        "android_client_info": {
+          "package_name": "edu.csulb.android.restofit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "619776203922-67rq4mah6972afbmkng5a7vf9p5c127b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.csulb.android.restofit",
+            "certificate_hash": "eab166207e36e697bf77fc7e4bdb60fb93c2d517"
+          }
+        },
+        {
+          "client_id": "619776203922-3v2ph0np2cd2lfaucqike3a5gu0rd511.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKNw-Gk-YXvmT1c8_z7r3fhHSFHgo8Lho"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "619776203922-3v2ph0np2cd2lfaucqike3a5gu0rd511.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

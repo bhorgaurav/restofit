@@ -35,7 +35,7 @@ public class FenceBroadcastReceiver extends BroadcastReceiver {
                     Location l = LocationHelper.getLastKnownLocation(context);
 
                     Bundle bundle = new Bundle();
-                    bundle.putString("q", "robeks jamba");
+                    bundle.putString("q", "robeks jamba drinks");
                     bundle.putString("radius", "10000");
                     bundle.putString("lat", String.valueOf(l.getLatitude()));
                     bundle.putString("lon", String.valueOf(l.getLongitude()));

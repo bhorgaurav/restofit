@@ -9,6 +9,7 @@ public class Review {
     private String photoTags;
     private String isPositive;
     private int rating;
+    private long timestamp;
     private double longitude, latitude;
 
     public Review() {
@@ -91,5 +92,13 @@ public class Review {
 
     public void setPhotoTags(String photoTags) {
         this.photoTags = photoTags;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

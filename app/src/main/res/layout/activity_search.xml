@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:addTextChangedListener="@{model.stateWatcher}"
-            app:validateEmpty="@{false}" />
+            app:validateMinLength="@{2}" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:addTextChangedListener="@{model.cityWatcher}"
-            app:validateEmpty="@{false}" />
+            app:validateMinLength="@{2}" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:addTextChangedListener="@{model.categoryWatcher}"
-            app:validateEmpty="@{false}" />
+            app:validateMinLength="@{2}" />
 
         <Button
             android:id="@+id/button_search"
