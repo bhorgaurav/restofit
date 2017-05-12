@@ -65,7 +65,8 @@
                 <data android:scheme="@string/facebook_app_id" />
             </intent-filter>
         </activity>
-        <activity android:name=".views.activities.AddReviewActivity"></activity>
+        <activity android:name=".views.activities.AddReviewActivity" />
+        <activity android:name=".views.activities.SearchActivity" />
     </application>
 
 </manifest>

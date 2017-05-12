@@ -45,6 +45,8 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.22.0'
     compile 'com.github.Ilhasoft:data-binding-validator:0.6.4'
     compile 'com.google.firebase:firebase-storage:10.2.4'
+
+    compile files('libs/libandroid_tensorflow_inference_java.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import edu.csulb.android.restofit.adapters.CategoryAdapter;
 import edu.csulb.android.restofit.api.APIClient;
 import edu.csulb.android.restofit.api.ZomatoAPI;
+import edu.csulb.android.restofit.helpers.PreferenceHelper;
+import edu.csulb.android.restofit.helpers.PreferenceKeys;
 import edu.csulb.android.restofit.pojos.Category;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -30,6 +32,7 @@ public class CategoryViewModel extends BaseObservable {
                 try {
                     if (response.isSuccessful()) {
                         JSONArray json = new JSONObject(response.body().string()).getJSONArray("categories");
+                        PreferenceHelper.save(PreferenceKeys.CATEGORIES, json.toString());
                         mAdapter.clear();
                         for (int i = 0; i < json.length(); i++) {
                             JSONObject singleCategory = json.getJSONObject(i).getJSONObject("categories");

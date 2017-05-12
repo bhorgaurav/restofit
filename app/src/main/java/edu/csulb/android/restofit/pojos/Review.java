@@ -6,6 +6,8 @@ public class Review {
     private String title;
     private String description;
     private String photoUrl;
+    private String photoTags;
+    private String isPositive;
     private int rating;
     private double longitude, latitude;
 
@@ -73,5 +75,21 @@ public class Review {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getIsPositive() {
+        return isPositive;
+    }
+
+    public void setIsPositive(String isPositive) {
+        this.isPositive = isPositive;
+    }
+
+    public String getPhotoTags() {
+        return photoTags;
+    }
+
+    public void setPhotoTags(String photoTags) {
+        this.photoTags = photoTags;
     }
 }

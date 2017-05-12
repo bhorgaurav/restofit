@@ -1,12 +1,12 @@
 package edu.csulb.android.restofit.views.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -116,18 +116,11 @@ public class MainActivity extends SuperActivity {
 
         // To show/hide the tabLayout when searching
         mMenuItemSearch = menu.findItem(R.id.search);
-        MenuItemCompat.setOnActionExpandListener(mMenuItemSearch, new MenuItemCompat.OnActionExpandListener() {
-
+        mMenuItemSearch.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                binding.tabLayout.setVisibility(View.VISIBLE);
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                binding.tabLayout.setVisibility(View.GONE);
-                return true;
+            public boolean onMenuItemClick(MenuItem item) {
+                startActivity(new Intent(MainActivity.this, SearchActivity.class));
+                return false;
             }
         });
 
