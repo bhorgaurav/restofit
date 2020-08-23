@@ -5,6 +5,8 @@ pipeline {
       steps {
         sh '''#!/bin/bash
 
+pwd
+
 chmod +x ./gradlew
 ./gradlew assembleRelease'''
       }
