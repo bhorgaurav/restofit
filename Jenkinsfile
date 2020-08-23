@@ -11,4 +11,7 @@ chmod +x ./gradlew
     }
 
   }
+  environment {
+    ANDROID_HOME = 'C:\\Users\\bhorg\\AppData\\Local\\Android\\Sdk'
+  }
 }
